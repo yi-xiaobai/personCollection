@@ -6,7 +6,7 @@ class GitHubService {
     this.owner = process.env.GITHUB_OWNER;
     this.repo = process.env.GITHUB_REPO;
     this.branch = process.env.GITHUB_BRANCH || 'master';
-    this.dataFile = 'data/articles.json';
+    this.dataFile = '/data.json';
     
     this.api = axios.create({
       baseURL: 'https://api.github.com',
