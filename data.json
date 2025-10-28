@@ -1,4 +1,11 @@
 {
-  "categories": [],
+  "categories": [
+    {
+      "id": "1761634936926",
+      "name": "n8n",
+      "description": "",
+      "createdAt": "2025-10-28T07:02:16.926Z"
+    }
+  ],
   "articles": []
 }
