@@ -16,11 +16,12 @@
   "articles": [
     {
       "id": "1761634957986",
-      "title": "哈哈哈哈",
+      "title": "个人微信全自动发布",
       "url": "https://waytoagi.feishu.cn/wiki/BvJCwnoYSiwygCkjpY6cYGsanTb",
       "description": "",
       "categoryId": "1761634936926",
-      "createdAt": "2025-10-28T07:02:37.986Z"
+      "createdAt": "2025-10-28T07:02:37.986Z",
+      "updatedAt": "2025-10-28T07:53:54.270Z"
     },
     {
       "title": "n8n部署及上手",
