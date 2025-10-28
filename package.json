@@ -2,7 +2,6 @@
   "name": "article-collection-system",
   "version": "1.0.0",
   "description": "文章链接收藏管理系统",
-  "type": "module",
   "scripts": {
     "dev:backend": "node backend/src/app.js",
     "dev:frontend": "vite",
