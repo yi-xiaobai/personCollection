@@ -11,6 +11,12 @@
       "name": "平台",
       "description": "",
       "createdAt": "2025-10-28T07:34:27.153Z"
+    },
+    {
+      "name": "prompt",
+      "description": "",
+      "id": "1761638071429",
+      "createdAt": "2025-10-28T07:54:31.429Z"
     }
   ],
   "articles": [
