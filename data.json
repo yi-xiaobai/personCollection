@@ -52,6 +52,14 @@
       "categoryId": "1761636867153",
       "id": "1761638126030",
       "createdAt": "2025-10-28T07:55:26.030Z"
+    },
+    {
+      "title": "deepseek",
+      "url": "https://platform.deepseek.com/transactions",
+      "description": "",
+      "categoryId": "1761636867153",
+      "id": "1761638140964",
+      "createdAt": "2025-10-28T07:55:40.964Z"
     }
   ]
 }
