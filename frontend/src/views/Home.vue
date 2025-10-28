@@ -86,36 +86,43 @@
           <!-- 文章列表 -->
           <div v-loading="loading" class="article-list">
             <div
-              v-for="article in filteredArticles"
+              v-for="article in paginatedArticles"
               :key="article.id"
               class="article-card"
             >
-              <div class="article-header">
-                <a :href="article.url" target="_blank" class="article-title">
-                  {{ article.title }}
-                  <el-icon><Link /></el-icon>
-                </a>
-                <div class="article-actions">
-                  <el-button text :icon="Edit" @click="editArticle(article)">
-                    编辑
-                  </el-button>
-                  <el-button text type="danger" :icon="Delete" @click="confirmDeleteArticle(article)">
-                    删除
-                  </el-button>
-                </div>
+              <!-- 预览图片 -->
+              <div class="article-preview">
+                <img :src="getScreenshotUrl(article.url)" :alt="article.title" @error="handleImageError" />
               </div>
               
-              <p v-if="article.description" class="article-description">
-                {{ article.description }}
-              </p>
-              
-              <div class="article-footer">
-                <el-tag size="small" type="info">
-                  {{ getCategoryName(article.categoryId) }}
-                </el-tag>
-                <span class="article-date">
-                  {{ formatDate(article.createdAt) }}
-                </span>
+              <div class="article-content">
+                <div class="article-header">
+                  <a :href="article.url" target="_blank" class="article-title">
+                    {{ article.title }}
+                    <el-icon><Link /></el-icon>
+                  </a>
+                  <div class="article-actions">
+                    <el-button text :icon="Edit" @click="editArticle(article)">
+                      编辑
+                    </el-button>
+                    <el-button text type="danger" :icon="Delete" @click="confirmDeleteArticle(article)">
+                      删除
+                    </el-button>
+                  </div>
+                </div>
+                
+                <p v-if="article.description" class="article-description">
+                  {{ article.description }}
+                </p>
+                
+                <div class="article-footer">
+                  <el-tag size="small" type="info">
+                    {{ getCategoryName(article.categoryId) }}
+                  </el-tag>
+                  <span class="article-date">
+                    {{ formatDate(article.createdAt) }}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -127,6 +134,19 @@
                 添加第一篇文章
               </el-button>
             </div>
+          </div>
+          
+          <!-- 分页 -->
+          <div v-if="filteredArticles.length > 0" class="pagination-wrapper">
+            <el-pagination
+              v-model:current-page="currentPage"
+              v-model:page-size="pageSize"
+              :page-sizes="[10, 20, 50, 100]"
+              :total="filteredArticles.length"
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
           </div>
         </section>
       </div>
@@ -244,6 +264,10 @@ const searchKeyword = ref('');
 const loading = ref(false);
 const saving = ref(false);
 
+// 分页状态
+const currentPage = ref(1);
+const pageSize = ref(10);
+
 // 对话框状态
 const categoryDialogVisible = ref(false);
 const articleDialogVisible = ref(false);
@@ -286,6 +310,13 @@ const filteredArticles = computed(() => {
   return result;
 });
 
+// 分页后的文章列表
+const paginatedArticles = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  return filteredArticles.value.slice(start, end);
+});
+
 // 方法
 function getCategoryArticleCount(categoryId) {
   return articles.value.filter(a => a.categoryId === categoryId).length;
@@ -312,6 +343,40 @@ function formatDate(dateString) {
 
 function selectCategory(categoryId) {
   selectedCategoryId.value = categoryId;
+  currentPage.value = 1; // 切换分类时重置到第一页
+}
+
+// 分页处理
+function handleSizeChange(newSize) {
+  pageSize.value = newSize;
+  currentPage.value = 1;
+}
+
+function handleCurrentChange(newPage) {
+  currentPage.value = newPage;
+}
+
+// 生成网页截图URL
+function getScreenshotUrl(url) {
+  if (!url) return '';
+  
+  // 方案1: 使用 Google PageSpeed Insights 的截图服务（免费，无需API key）
+  // return `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&screenshot=true`;
+  
+  // 方案2: 使用 Microlink 的截图服务（免费，无需API key）
+  return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`;
+  
+  // 方案3: 使用 Urlbox.io 的免费服务（需要注册获取免费token）
+  // return `https://api.urlbox.io/v1/YOUR_TOKEN/png?url=${encodeURIComponent(url)}&width=800&height=600`;
+  
+  // 方案4: 使用 Screenshotmachine.com（免费，有限制）
+  // return `https://api.screenshotmachine.com?key=YOUR_KEY&url=${encodeURIComponent(url)}&dimension=800x600`;
+}
+
+// 图片加载失败处理
+function handleImageError(event) {
+  event.target.style.display = 'none';
+  event.target.parentElement.style.display = 'none';
 }
 
 // 加载数据
@@ -696,14 +761,43 @@ onMounted(async () => {
   background: #fafafa;
   border: 1px solid #ebeef5;
   border-radius: 8px;
-  padding: 20px;
   margin-bottom: 16px;
   transition: all 0.3s;
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
 }
 
 .article-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+}
+
+/* 预览图片 */
+.article-preview {
+  flex-shrink: 0;
+  width: 200px;
+  height: 150px;
+  overflow: hidden;
+  background: #f5f7fa;
+}
+
+.article-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.article-card:hover .article-preview img {
+  transform: scale(1.05);
+}
+
+.article-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .article-header {
@@ -767,6 +861,15 @@ onMounted(async () => {
   font-size: 14px;
 }
 
+/* 分页 */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  border-top: 1px solid #ebeef5;
+  margin-top: 20px;
+}
+
 /* 响应式 */
 @media (max-width: 1200px) {
   .content-wrapper {
@@ -779,6 +882,19 @@ onMounted(async () => {
 
   .search-input {
     width: 200px;
+  }
+  
+  .article-card {
+    flex-direction: column;
+  }
+  
+  .article-preview {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .article-content {
+    padding: 16px;
   }
 }
 </style>
