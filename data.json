@@ -80,10 +80,11 @@
     {
       "title": "ClawCloud",
       "url": "https://ap-northeast-1.run.claw.cloud/",
-      "description": "",
+      "description": "目前免费部署n8n的",
       "categoryId": "1761636867153",
       "id": "1761789584857",
-      "createdAt": "2025-10-30T01:59:44.857Z"
+      "createdAt": "2025-10-30T01:59:44.857Z",
+      "updatedAt": "2025-10-30T08:09:20.612Z"
     }
   ]
 }
